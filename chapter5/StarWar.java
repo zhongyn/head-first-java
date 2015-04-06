@@ -4,7 +4,7 @@ public class StarWar {
 
     private GameHelper helper = new GameHelper();
     private ArrayList<Ship> ships = new ArrayList<Ship>();
-    private numOfGuesses = 0;
+    private int numOfGuesses = 0;
 
     private void setUpGame() {
         // first make some ships and give them location
@@ -24,6 +24,7 @@ public class StarWar {
 
         for (Ship shipToSet : ships) {
             ArrayList<String> newLoc = helper.placeShip(3);
+            // System.out.println(newLoc);
             shipToSet.setLocation(newLoc);
         }
     }
@@ -55,5 +56,20 @@ public class StarWar {
         System.out.println(result);
     }
 
+    private void finishGame() {
+        System.out.println("All ships are dead!");
+        if (numOfGuesses <= 18) {
+            System.out.println("It only took you " + numOfGuesses + " guesses.");
+        } else {
+            System.out.println("Took you long enough. " + numOfGuesses + " guesses.");
+        }
+    }
 
+    public static void main (String[] args) {
+        StarWar game = new StarWar();
+        game.setUpGame();
+        game.startPlaying();
+    }
 }
+
+
