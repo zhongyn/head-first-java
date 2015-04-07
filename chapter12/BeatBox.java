@@ -3,6 +3,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import javax.sound.midi.*;
+import java.io.*;
 
 public class BeatBox {
     
@@ -12,6 +13,8 @@ public class BeatBox {
     Sequence sequence;
     Track track;
     JFrame frame;
+    boolean[] checkBoxState = new boolean[256];
+
 
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustic Snare", "Crash Cymbal", "Hand Clap",
         "High Tom", "Hi Bongo", "Maracas", "Whistle", "Low Conga", "Cowbell", "Vibraslap", "Low-mid Tom", "High Agogo", "Open Hi Conga"};
@@ -46,6 +49,18 @@ public class BeatBox {
         JButton downTempo = new JButton("downTempo");
         downTempo.addActionListener(new MyDownTempoListener());
         buttonBox.add(downTempo);
+
+        JButton savePattern = new JButton("savePattern");
+        savePattern.addActionListener(new MySavePatternListener());
+        buttonBox.add(savePattern);
+
+        JButton loadPattern = new JButton("loadPattern");
+        loadPattern.addActionListener(new MyLoadPatternListener());
+        buttonBox.add(loadPattern);
+
+        JButton clearPattern = new JButton("clearPattern");
+        clearPattern.addActionListener(new MyClearPatternListener());
+        buttonBox.add(clearPattern);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
         for (int i = 0; i < 16; i++) {
@@ -144,6 +159,61 @@ public class BeatBox {
         public void actionPerformed(ActionEvent a) {
             float tempoFactor = sequencer.getTempoFactor();
             sequencer.setTempoFactor((float)(tempoFactor*0.97));
+        }
+    }
+
+    public class MyClearPatternListener implements ActionListener {
+        public void actionPerformed(ActionEvent a) {
+            for (int i = 0; i < 256; i++) {
+                checkBoxList.get(i).setSelected(false);
+            }
+        }
+    }
+
+    public class MySavePatternListener implements ActionListener {
+        public void actionPerformed(ActionEvent a) {
+            for (int i = 0; i < 256; i++) {
+                JCheckBox checkBox = checkBoxList.get(i);
+                if (checkBox.isSelected()) {
+                    checkBoxState[i] = true;
+                }
+            }
+            JFileChooser fileSave = new JFileChooser();
+            fileSave.showSaveDialog(frame);
+            File file = fileSave.getSelectedFile();
+
+            try {
+                FileOutputStream fs = new FileOutputStream(file);
+                ObjectOutputStream os = new ObjectOutputStream(fs);
+                os.writeObject(checkBoxState);
+            } catch(IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public class MyLoadPatternListener implements ActionListener {
+        public void actionPerformed(ActionEvent a) {
+            JFileChooser fileOpen = new JFileChooser();
+            fileOpen.showOpenDialog(frame);
+            File file = fileOpen.getSelectedFile();
+
+            try {
+                FileInputStream fs = new FileInputStream(file);
+                ObjectInputStream is = new ObjectInputStream(fs);
+                checkBoxState = (boolean[])is.readObject();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+
+            for (int i = 0; i < 256; i++) {
+                JCheckBox checkBox = checkBoxList.get(i);
+                if (checkBoxState[i]) {
+                    checkBox.setSelected(true);
+                } else {
+                    checkBox.setSelected(false);
+                }
+            }
         }
     }
 
