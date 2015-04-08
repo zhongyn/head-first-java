@@ -24,6 +24,7 @@ public class ChatBeatBox {
     ObjectOutputStream out;
     ObjectInputStream in;
     String userName;
+    Random rnd = new Random();
 
 
     String[] instrumentNames = {"Bass Drum", "Closed Hi-Hat", "Open Hi-Hat", "Acoustic Snare", "Crash Cymbal", "Hand Clap",
@@ -86,6 +87,10 @@ public class ChatBeatBox {
         JButton clearPattern = new JButton("clearPattern");
         clearPattern.addActionListener(new MyClearPatternListener());
         buttonBox.add(clearPattern);
+
+        JButton randomPattern = new JButton("randomPattern");
+        randomPattern.addActionListener(new MyRandomPatternListener());
+        buttonBox.add(randomPattern);
 
         JButton send = new JButton("Send");
         send.addActionListener(new MySendListener());
@@ -203,6 +208,21 @@ public class ChatBeatBox {
         public void actionPerformed(ActionEvent a) {
             for (int i = 0; i < 256; i++) {
                 checkBoxList.get(i).setSelected(false);
+            }
+        }
+    }
+
+    public class MyRandomPatternListener implements ActionListener {
+        public void actionPerformed(ActionEvent a) {
+            boolean bool;
+            for (int i = 0; i < 256; i++) {
+                // boolean bool = rnd.nextBoolean();
+                if (Math.random() < 0.2) {
+                    bool = true;
+                } else {
+                    bool = false;
+                }
+                checkBoxList.get(i).setSelected(bool);
             }
         }
     }
